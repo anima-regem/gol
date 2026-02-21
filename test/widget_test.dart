@@ -1,30 +1,54 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:gol/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('splash, navigation, and game controls work', (tester) async {
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('Game of Life'), findsOneWidget);
+    expect(find.text('Start'), findsNothing);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    await tester.pump(const Duration(milliseconds: 3200));
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.text('Start'), findsOneWidget);
+    expect(find.byIcon(Icons.sports_esports_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.menu_book_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.tune_rounded), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.menu_book_rounded));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('Usual Patterns'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.tune_rounded));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('Dark Mode'), findsWidgets);
+    expect(find.text('Old Green Geek'), findsOneWidget);
+
+    final switchFinder = find.byType(Switch);
+    expect(switchFinder, findsOneWidget);
+    expect(tester.widget<Switch>(switchFinder).value, isTrue);
+
+    await tester.tap(switchFinder);
+    await tester.pump(const Duration(milliseconds: 250));
+    expect(tester.widget<Switch>(switchFinder).value, isFalse);
+
+    await tester.ensureVisible(find.text('Old Green Geek'));
+    await tester.pump(const Duration(milliseconds: 250));
+    await tester.tap(find.text('Old Green Geek'));
+    await tester.pump(const Duration(milliseconds: 250));
+
+    await tester.tap(find.byIcon(Icons.sports_esports_rounded));
+    await tester.pump(const Duration(milliseconds: 350));
+
+    await tester.tap(find.text('Start'));
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Pause'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump(const Duration(milliseconds: 50));
   });
 }
